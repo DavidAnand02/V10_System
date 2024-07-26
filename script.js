@@ -16,6 +16,7 @@ function toggleSkillDetails() {
 
 function addExperience(hours) {
     experience += hours;
+    saveProgress();
     updateLevel();
     updateProgressBar('experience-bar', experience - getLevelExperience(level - 1), getLevelExperience(level) - getLevelExperience(level - 1));
     document.getElementById('experience').innerText = experience;
@@ -24,6 +25,7 @@ function addExperience(hours) {
 function removeExperience(hours) {
     experience -= hours;
     if (experience < 0) experience = 0;
+    saveProgress();
     updateLevel();
     updateProgressBar('experience-bar', experience - getLevelExperience(level - 1), getLevelExperience(level) - getLevelExperience(level - 1));
     document.getElementById('experience').innerText = experience;
@@ -60,7 +62,6 @@ function updateLevel() {
 }
 
 function getLevelExperience(level) {
-    // Using an exponential growth formula with normalization
     return Math.pow(level / maxLevel, 2) * maxExperience;
 }
 
@@ -83,5 +84,27 @@ function getEffectStage(level) {
     return 'advanced';
 }
 
-// Initial setup
-updateLevel();
+function saveProgress() {
+    localStorage.setItem('experience', experience);
+    localStorage.setItem('level', level);
+}
+
+function loadProgress() {
+    const savedExperience = localStorage.getItem('experience');
+    const savedLevel = localStorage.getItem('level');
+    
+    if (savedExperience !== null) {
+        experience = parseFloat(savedExperience);
+    }
+    
+    if (savedLevel !== null) {
+        level = parseInt(savedLevel);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadProgress();
+    updateLevel();
+    updateProgressBar('experience-bar', experience - getLevelExperience(level - 1), getLevelExperience(level) - getLevelExperience(level - 1));
+    document.getElementById('experience').innerText = experience;
+});
