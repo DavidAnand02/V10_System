@@ -25,6 +25,9 @@ h1 {
 .skill-card {
     margin-bottom: 20px;
     cursor: pointer;
+    background: #2b3a52;
+    padding: 10px;
+    border-radius: 10px;
 }
 
 .hidden {
@@ -74,4 +77,28 @@ button:active {
 
 .skill-card i {
     margin-right: 10px;
+}
+
+#icon-selector {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #3e4a68;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#icon-selector button {
+    background: #2b3a52;
+    border: none;
+    margin: 5px;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#icon-selector button:hover {
+    background: #1e293b;
 }
