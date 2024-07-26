@@ -1,0 +1,77 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #2e3b55;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: #fff;
+}
+
+.container {
+    background: #3e4a68;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    width: 300px;
+    text-align: center;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+.skill-card {
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+
+.hidden {
+    display: none;
+}
+
+.progress-bar-container {
+    background: #1e293b;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.progress-bar {
+    height: 20px;
+    background: #6373b6;
+    width: 0;
+}
+
+button {
+    background: #6373b6;
+    border: none;
+    padding: 10px;
+    margin: 5px;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #4f5a8a;
+}
+
+button:active {
+    background: #3e4a68;
+}
+
+.effect {
+    margin-bottom: 20px;
+}
+
+.skill-card h2 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.skill-card i {
+    margin-right: 10px;
+}
