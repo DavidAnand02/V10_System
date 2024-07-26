@@ -10,21 +10,20 @@
 <body>
     <div class="container">
         <h1>Skill Monitor</h1>
-        <div id="skills-container"></div>
-        <button onclick="addSkill()">Add New Skill</button>
-        <button onclick="saveSkills()">Save Skills</button>
-        <button onclick="loadSkills()">Load Skills</button>
-    </div>
-    <div id="icon-selector" class="hidden">
-        <h2>Select Icon</h2>
-        <button onclick="selectIcon('brain')"><i class="fas fa-brain"></i></button>
-        <button onclick="selectIcon('book')"><i class="fas fa-book"></i></button>
-        <button onclick="selectIcon('lightbulb')"><i class="fas fa-lightbulb"></i></button>
-        <button onclick="selectIcon('rocket')"><i class="fas fa-rocket"></i></button>
-        <button onclick="closeIconSelector()">Close</button>
+        <div id="skill-list"></div>
+        <button onclick="showAddSkillForm()">Add New Skill</button>
+        <div id="add-skill-form" class="hidden">
+            <h2>Add New Skill</h2>
+            <label for="skill-name">Skill Name:</label>
+            <input type="text" id="skill-name" placeholder="e.g., Super Learning">
+            <label for="skill-icon">Icon (Font Awesome):</label>
+            <input type="text" id="skill-icon" placeholder="e.g., fas fa-brain">
+            <label for="skill-description">Description:</label>
+            <textarea id="skill-description" placeholder="Describe the skill..."></textarea>
+            <button onclick="addSkill()">Add Skill</button>
+            <button onclick="hideAddSkillForm()">Cancel</button>
+        </div>
     </div>
     <script src="script.js"></script>
 </body>
 </html>
-
-
