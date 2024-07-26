@@ -1,155 +1,111 @@
-let skills = JSON.parse(localStorage.getItem('skills')) || [];
+let experience = 0;
+let level = 1;
+const maxLevel = 100;
+const maxExperience = 10000;
+const effects = {
+    retention: 0,
+    speed: 0
+};
 
-function renderSkills() {
-    const skillList = document.getElementById('skill-list');
-    skillList.innerHTML = '';
-    skills.forEach((skill, index) => {
-        skillList.innerHTML += `
-            <div class="skill-card" onclick="toggleSkillDetails(${index})">
-                <button class="remove-btn" onclick="removeSkill(${index}); event.stopPropagation();"><i class="fas fa-times"></i></button>
-                <h2><i class="fas ${skill.icon}"></i> ${skill.name}</h2>
-                <div id="skill-details-${index}" class="hidden" onclick="event.stopPropagation()">
-                    <p>Description: ${skill.description}</p>
-                    <p>Experience: <span id="experience-${index}">${skill.experience}</span> points</p>
-                    <p>Level: <span id="level-${index}">${skill.level}</span></p>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar" id="experience-bar-${index}"></div>
-                    </div>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar" id="level-progress-bar-${index}"></div>
-                    </div>
-                    <p>Effects:</p>
-                    ${skill.effects.map((effect, effectIndex) => `
-                        <div class="effect">
-                            <p>${effect.name}</p>
-                            <div class="progress-bar-container">
-                                <div class="progress-bar" id="effect-bar-${index}-${effectIndex}"></div>
-                            </div>
-                            <button onclick="renameEffect(${index}, ${effectIndex})">Rename Effect</button>
-                        </div>
-                    `).join('')}
-                    <button onclick="addExperience(${index}, 1)">Add 1 Hour</button>
-                    <button onclick="addExperience(${index}, 0.5)">Add 30 Minutes</button>
-                    <button onclick="removeExperience(${index}, 1)">Remove 1 Hour</button>
-                    <button onclick="removeExperience(${index}, 0.5)">Remove 30 Minutes</button>
-                    <button onclick="addEffect(${index})">Add Effect</button>
-                </div>
-            </div>
-        `;
-        updateProgressBar(index);
-    });
-}
+let interval;
 
-function toggleSkillDetails(index) {
-    const skillDetails = document.getElementById(`skill-details-${index}`);
+function toggleSkillDetails() {
+    const skillDetails = document.getElementById('skill-details');
     skillDetails.classList.toggle('hidden');
 }
 
-function addExperience(index, hours) {
-    let skill = skills[index];
-    skill.experience += hours;
-    saveSkills();
-    updateSkill(index);
+function addExperience(hours) {
+    experience += hours;
+    saveProgress();
+    updateLevel();
+    updateProgressBar('experience-bar', experience - getLevelExperience(level - 1), getLevelExperience(level) - getLevelExperience(level - 1));
+    document.getElementById('experience').innerText = experience;
 }
 
-function removeExperience(index, hours) {
-    let skill = skills[index];
-    skill.experience -= hours;
-    if (skill.experience < 0) skill.experience = 0;
-    saveSkills();
-    updateSkill(index);
+function removeExperience(hours) {
+    experience -= hours;
+    if (experience < 0) experience = 0;
+    saveProgress();
+    updateLevel();
+    updateProgressBar('experience-bar', experience - getLevelExperience(level - 1), getLevelExperience(level) - getLevelExperience(level - 1));
+    document.getElementById('experience').innerText = experience;
 }
 
-function updateSkill(index) {
-    let skill = skills[index];
-    skill.level = calculateLevel(skill.experience);
-    document.getElementById(`experience-${index}`).innerText = skill.experience;
-    document.getElementById(`level-${index}`).innerText = skill.level;
-    updateProgressBar(index);
+function startAddingPoints(hours) {
+    addExperience(hours);
+    interval = setInterval(() => addExperience(hours), 100);
 }
 
-function calculateLevel(experience) {
-    let level = 1;
-    while (experience >= getLevelExperience(level) && level < 100) {
-        level++;
+function startRemovingPoints(hours) {
+    removeExperience(hours);
+    interval = setInterval(() => removeExperience(hours), 100);
+}
+
+function stopAddingPoints() {
+    clearInterval(interval);
+}
+
+function stopRemovingPoints() {
+    clearInterval(interval);
+}
+
+function updateLevel() {
+    let newLevel = 1;
+    while (experience >= getLevelExperience(newLevel) && newLevel < maxLevel) {
+        newLevel++;
     }
-    return level;
+    level = newLevel;
+    document.getElementById('level').innerText = level;
+
+    updateEffectProgress('retention-bar', level, effects.retention);
+    updateEffectProgress('speed-bar', level, effects.speed);
 }
 
-function updateProgressBar(index) {
-    let skill = skills[index];
-    const levelExperience = getLevelExperience(skill.level);
-    const previousLevelExperience = getLevelExperience(skill.level - 1);
-    updateProgressBarElement(`experience-bar-${index}`, skill.experience - previousLevelExperience, levelExperience - previousLevelExperience);
-    updateProgressBarElement(`level-progress-bar-${index}`, skill.experience, levelExperience);
-    skill.effects.forEach((_, effectIndex) => {
-        updateProgressBarElement(`effect-bar-${index}-${effectIndex}`, skill.experience, levelExperience); // Assuming effects use the same level experience calculation
-    });
+function getLevelExperience(level) {
+    return Math.pow(level / maxLevel, 2) * maxExperience;
 }
 
-function updateProgressBarElement(id, value, maxValue) {
+function updateProgressBar(id, value, maxValue) {
     const progressBar = document.getElementById(id);
     const percentage = (value / maxValue) * 100;
     progressBar.style.width = `${percentage}%`;
 }
 
-function getLevelExperience(level) {
-    return Math.pow(level / 100, 2) * 10000;
+function updateEffectProgress(id, level, effectLevel) {
+    const effectStage = getEffectStage(level);
+    const progressBar = document.getElementById(id);
+    const stages = { beginner: 33, intermediate: 66, advanced: 100 };
+    progressBar.style.width = `${stages[effectStage]}%`;
 }
 
-function removeSkill(index) {
-    skills.splice(index, 1);
-    saveSkills();
-    renderSkills();
+function getEffectStage(level) {
+    if (level < 34) return 'beginner';
+    if (level < 67) return 'intermediate';
+    return 'advanced';
 }
 
-function addSkill() {
-    const name = document.getElementById('skill-name').value;
-    const description = document.getElementById('skill-description').value;
-    const icon = document.getElementById('skill-icon').value;
-    if (name && description && icon) {
-        skills.push({
-            name,
-            description,
-            icon,
-            experience: 0,
-            level: 1,
-            effects: []
-        });
-        saveSkills();
-        renderSkills();
-        hideAddSkillForm();
+function saveProgress() {
+    localStorage.setItem('experience', experience);
+    localStorage.setItem('level', level);
+}
+
+function loadProgress() {
+    const savedExperience = localStorage.getItem('experience');
+    const savedLevel = localStorage.getItem('level');
+    
+    if (savedExperience !== null) {
+        experience = parseFloat(savedExperience);
+    }
+    
+    if (savedLevel !== null) {
+        level = parseInt(savedLevel);
     }
 }
 
-function addEffect(index) {
-    const effectName = prompt('Enter effect name:');
-    if (effectName) {
-        skills[index].effects.push({ name: effectName, progress: 0 });
-        saveSkills();
-        renderSkills();
-    }
-}
+document.addEventListener('DOMContentLoaded', () => {
+    loadProgress();
+    updateLevel();
+    updateProgressBar('experience-bar', experience - getLevelExperience(level - 1), getLevelExperience(level) - getLevelExperience(level - 1));
+    document.getElementById('experience').innerText = experience;
+});
 
-function renameEffect(skillIndex, effectIndex) {
-    const newName = prompt('Enter new effect name:');
-    if (newName) {
-        skills[skillIndex].effects[effectIndex].name = newName;
-        saveSkills();
-        renderSkills();
-    }
-}
-
-function showAddSkillForm() {
-    document.getElementById('add-skill-form').classList.remove('hidden');
-}
-
-function hideAddSkillForm() {
-    document.getElementById('add-skill-form').classList.add('hidden');
-}
-
-function saveSkills() {
-    localStorage.setItem('skills', JSON.stringify(skills));
-}
-
-document.addEventListener('DOMContentLoaded', renderSkills);
