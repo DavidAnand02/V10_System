@@ -5,27 +5,39 @@ let skills = [];
 
 document.addEventListener('DOMContentLoaded', () => {
     loadSkills();
+    renderSkills();
 });
 
-function addSkill() {
-    const skillName = prompt("Enter the name of the new skill:");
-    if (!skillName) return;
-    
-    const icon = prompt("Enter the FontAwesome icon name (e.g., 'brain'):");
-    if (!icon) return;
+function showAddSkillForm() {
+    document.getElementById('add-skill-form').classList.remove('hidden');
+}
 
-    skills.push({
-        name: skillName,
-        icon: icon,
-        experience: 0,
-        level: 1,
-        effects: {
-            retention: 0,
-            speed: 0
-        }
-    });
+function hideAddSkillForm() {
+    document.getElementById('add-skill-form').classList.add('hidden');
+}
+
+function addSkill() {
+    const name = document.getElementById('skill-name').value;
+    const icon = document.getElementById('skill-icon').value;
+    const description = document.getElementById('skill-description').value;
     
-    renderSkills();
+    if (name && icon && description) {
+        const newSkill = {
+            name,
+            icon,
+            description,
+            experience: 0,
+            level: 1,
+            effects: {
+                retention: 0,
+                speed: 0
+            }
+        };
+        skills.push(newSkill);
+        saveSkills();
+        renderSkills();
+        hideAddSkillForm();
+    }
 }
 
 function removeSkill(index) {
@@ -34,63 +46,21 @@ function removeSkill(index) {
     renderSkills();
 }
 
-function renderSkills() {
-    const container = document.getElementById('skills-container');
-    container.innerHTML = '';
-
-    skills.forEach((skill, index) => {
-        const skillCard = document.createElement('div');
-        skillCard.classList.add('skill-card');
-        skillCard.onclick = () => toggleSkillDetails(index);
-
-        const icon = `<i class="fas fa-${skill.icon}"></i>`;
-        skillCard.innerHTML = `
-            <h2>${icon} ${skill.name}</h2>
-            <div id="skill-details-${index}" class="hidden" onclick="event.stopPropagation()">
-                <p>Experience: <span id="experience-${index}">${skill.experience}</span> points</p>
-                <p>Level: <span id="level-${index}">${skill.level}</span></p>
-                <div class="progress-bar-container">
-                    <div class="progress-bar" id="experience-bar-${index}"></div>
-                </div>
-                <p>Effects:</p>
-                <div class="effect">
-                    <p>Better Retention</p>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar" id="retention-bar-${index}"></div>
-                    </div>
-                </div>
-                <div class="effect">
-                    <p>Speed Learning</p>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar" id="speed-bar-${index}"></div>
-                    </div>
-                </div>
-                <button onmousedown="startAddingPoints(${index}, 1)" onmouseup="stopAddingPoints()" onmouseleave="stopAddingPoints()">Add 1 Hour</button>
-                <button onmousedown="startAddingPoints(${index}, 0.5)" onmouseup="stopAddingPoints()" onmouseleave="stopAddingPoints()">Add 30 Minutes</button>
-                <button onmousedown="startRemovingPoints(${index}, 1)" onmouseup="stopRemovingPoints()" onmouseleave="stopRemovingPoints()">Remove 1 Hour</button>
-                <button onmousedown="startRemovingPoints(${index}, 0.5)" onmouseup="stopRemovingPoints()" onmouseleave="stopRemovingPoints()">Remove 30 Minutes</button>
-                <button onclick="removeSkill(${index})">Remove Skill</button>
-            </div>
-        `;
-        container.appendChild(skillCard);
-    });
-}
-
 function toggleSkillDetails(index) {
     const skillDetails = document.getElementById(`skill-details-${index}`);
     skillDetails.classList.toggle('hidden');
 }
 
 function addExperience(index, hours) {
-    const skill = skills[index];
-    skill.experience += hours;
+    skills[index].experience += hours;
+    saveSkills();
     updateSkill(index);
 }
 
 function removeExperience(index, hours) {
-    const skill = skills[index];
-    skill.experience -= hours;
-    if (skill.experience < 0) skill.experience = 0;
+    skills[index].experience -= hours;
+    if (skills[index].experience < 0) skills[index].experience = 0;
+    saveSkills();
     updateSkill(index);
 }
 
@@ -114,17 +84,12 @@ function stopRemovingPoints() {
 
 function updateSkill(index) {
     const skill = skills[index];
-    skill.level = calculateLevel(skill.experience);
-    document.getElementById(`experience-${index}`).innerText = skill.experience;
+    const level = calculateLevel(skill.experience);
+    skill.level = level;
     document.getElementById(`level-${index}`).innerText = skill.level;
-
-    const expBar = document.getElementById(`experience-bar-${index}`);
-    updateProgressBar(expBar, skill.experience - getLevelExperience(skill.level - 1), getLevelExperience(skill.level) - getLevelExperience(skill.level - 1));
-
+    updateProgressBar(`experience-bar-${index}`, skill.experience - getLevelExperience(skill.level - 1), getLevelExperience(skill.level) - getLevelExperience(skill.level - 1));
     updateEffectProgress(`retention-bar-${index}`, skill.level, skill.effects.retention);
     updateEffectProgress(`speed-bar-${index}`, skill.level, skill.effects.speed);
-
-    saveSkills();
 }
 
 function calculateLevel(experience) {
@@ -137,3 +102,65 @@ function calculateLevel(experience) {
 
 function getLevelExperience(level) {
     return Math.pow(level / maxLevel, 2) * maxExperience;
+}
+
+function updateProgressBar(id, value, maxValue) {
+    const progressBar = document.getElementById(id);
+    const percentage = (value / maxValue) * 100;
+    progressBar.style.width = `${percentage}%`;
+}
+
+function updateEffectProgress(id, level, effectLevel) {
+    const effectStage = getEffectStage(level);
+    const progressBar = document.getElementById(id);
+    const stages = { beginner: 33, intermediate: 66, advanced: 100 };
+    progressBar.style.width = `${stages[effectStage]}%`;
+}
+
+function getEffectStage(level) {
+    if (level < 34) return 'beginner';
+    if (level < 67) return 'intermediate';
+    return 'advanced';
+}
+
+function saveSkills() {
+    localStorage.setItem('skills', JSON.stringify(skills));
+}
+
+function loadSkills() {
+    const savedSkills = localStorage.getItem('skills');
+    if (savedSkills) {
+        skills = JSON.parse(savedSkills);
+    }
+}
+
+function renderSkills() {
+    const skillList = document.getElementById('skill-list');
+    skillList.innerHTML = '';
+    skills.forEach((skill, index) => {
+        const skillCard = document.createElement('div');
+        skillCard.className = 'skill-card';
+        skillCard.innerHTML = `
+            <h2 onclick="toggleSkillDetails(${index})"><i class="${skill.icon}"></i> ${skill.name}</h2>
+            <div id="skill-details-${index}" class="hidden" onclick="event.stopPropagation()">
+                <p>Experience: <span id="experience-${index}">${skill.experience}</span> points</p>
+                <p>Level: <span id="level-${index}">${skill.level}</span></p>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="experience-bar-${index}"></div>
+                </div>
+                <p>Effects:</p>
+                <div class="effect">
+                    <p>Better Retention</p>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="retention-bar-${index}"></div>
+                    </div>
+                </div>
+                <div class="effect">
+                    <p>Speed Learning</p>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="speed-bar-${index}"></div>
+                    </div>
+                </div>
+                <button onmousedown="startAddingPoints(${index}, 1)" onmouseup="stopAddingPoints()" onmouseleave="stopAddingPoints()">Add 1 Hour</button>
+                <button onmousedown="startAddingPoints(${index}, 0.5)" onmouseup="stopAddingPoints()" onmouseleave="stopAddingPoints()">Add 30 Minutes</button>
+                <button onmousedown="startRemovingPoints(${index}, 1)" onmouseup="stop
