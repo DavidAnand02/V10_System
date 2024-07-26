@@ -5,8 +5,8 @@ function renderSkills() {
     skillList.innerHTML = '';
     skills.forEach((skill, index) => {
         skillList.innerHTML += `
-            <div class="skill-card">
-                <button class="remove-btn" onclick="removeSkill(${index})"><i class="fas fa-times"></i></button>
+            <div class="skill-card" onclick="toggleSkillDetails(${index})">
+                <button class="remove-btn" onclick="removeSkill(${index}); event.stopPropagation();"><i class="fas fa-times"></i></button>
                 <h2><i class="fas ${skill.icon}"></i> ${skill.name}</h2>
                 <div id="skill-details-${index}" class="hidden" onclick="event.stopPropagation()">
                     <p>Description: ${skill.description}</p>
@@ -145,4 +145,11 @@ function showAddSkillForm() {
 }
 
 function hideAddSkillForm() {
-    document.getElementById
+    document.getElementById('add-skill-form').classList.add('hidden');
+}
+
+function saveSkills() {
+    localStorage.setItem('skills', JSON.stringify(skills));
+}
+
+document.addEventListener('DOMContentLoaded', renderSkills);
