@@ -108,4 +108,3 @@ document.addEventListener('DOMContentLoaded', () => {
     updateProgressBar('experience-bar', experience - getLevelExperience(level - 1), getLevelExperience(level) - getLevelExperience(level - 1));
     document.getElementById('experience').innerText = experience;
 });
-
