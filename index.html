@@ -10,35 +10,21 @@
 <body>
     <div class="container">
         <h1>Skill Monitor</h1>
-        <div class="skill-card" onclick="toggleSkillDetails()">
-            <h2><i class="fas fa-brain"></i> Super Learning</h2>
-            <div id="skill-details" class="hidden" onclick="event.stopPropagation()">
-                <p>Experience: <span id="experience">0</span> points</p>
-                <p>Level: <span id="level">1</span></p>
-                <div class="progress-bar-container">
-                    <div class="progress-bar" id="experience-bar"></div>
-                </div>
-                <p>Effects:</p>
-                <div class="effect">
-                    <p>Better Retention</p>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar" id="retention-bar"></div>
-                    </div>
-                </div>
-                <div class="effect">
-                    <p>Speed Learning</p>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar" id="speed-bar"></div>
-                    </div>
-                </div>
-                <button id="hour-button" onmousedown="startAddingPoints(1)" onmouseup="stopAddingPoints()" onmouseleave="stopAddingPoints()">Add 1 Hour</button>
-                <button id="minute-button" onmousedown="startAddingPoints(0.5)" onmouseup="stopAddingPoints()" onmouseleave="stopAddingPoints()">Add 30 Minutes</button>
-                <button id="remove-hour-button" onmousedown="startRemovingPoints(1)" onmouseup="stopRemovingPoints()" onmouseleave="stopRemovingPoints()">Remove 1 Hour</button>
-                <button id="remove-minute-button" onmousedown="startRemovingPoints(0.5)" onmouseup="stopRemovingPoints()" onmouseleave="stopRemovingPoints()">Remove 30 Minutes</button>
-            </div>
-        </div>
+        <div id="skills-container"></div>
+        <button onclick="addSkill()">Add New Skill</button>
+        <button onclick="saveSkills()">Save Skills</button>
+        <button onclick="loadSkills()">Load Skills</button>
+    </div>
+    <div id="icon-selector" class="hidden">
+        <h2>Select Icon</h2>
+        <button onclick="selectIcon('brain')"><i class="fas fa-brain"></i></button>
+        <button onclick="selectIcon('book')"><i class="fas fa-book"></i></button>
+        <button onclick="selectIcon('lightbulb')"><i class="fas fa-lightbulb"></i></button>
+        <button onclick="selectIcon('rocket')"><i class="fas fa-rocket"></i></button>
+        <button onclick="closeIconSelector()">Close</button>
     </div>
     <script src="script.js"></script>
 </body>
 </html>
+
 
