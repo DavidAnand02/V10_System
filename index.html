@@ -1,29 +1,374 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Skill Monitor</title>
+    <title>Welcome</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Skill Monitor</h1>
-        <div id="skill-list"></div>
-        <button onclick="showAddSkillForm()">Add New Skill</button>
-        <div id="add-skill-form" class="hidden">
-            <h2>Add New Skill</h2>
-            <label for="skill-name">Skill Name:</label>
-            <input type="text" id="skill-name" placeholder="e.g., Super Learning">
-            <label for="skill-icon">Icon (Font Awesome):</label>
-            <input type="text" id="skill-icon" placeholder="e.g., fas fa-brain">
-            <label for="skill-description">Description:</label>
-            <textarea id="skill-description" placeholder="Describe the skill..."></textarea>
-            <button onclick="addSkill()">Add Skill</button>
-            <button onclick="hideAddSkillForm()">Cancel</button>
+<!-- Landing Page -->
+<div id="landing-page" class="container">
+    <!-- Info Button -->
+    <button id="info-button" onclick="navigateTo('instructions')" style="position: absolute; top: 10px; left: 10px; width: 30px; height: 30px; font-size: 20px; padding: 0; border: none; border-radius: 50%; text-align: center; line-height: 30px;">
+        ⓘ
+    </button>
+
+    <h1>Welcome Player</h1>
+    <p>You now have the qualifications to begin.</p>
+    
+    <div class="button-group">
+        <button onclick="navigateTo('player-status')">Status</button>
+        <button onclick="navigateTo('job')">Job</button>
+        <button onclick="navigateTo('skills')">Skills</button>
+        <button onclick="navigateTo('quests')">Quests</button>
+    </div>
+</div>
+
+<!-- Instructions Page -->
+<div id="instructions-page" class="container" style="display:none;">
+    <h1>Instructions</h1>
+
+    <p>1. <strong>Status Page:</strong> Track the rewards you set and earn from quests here. These include:</p>
+    <ul>
+        <li><strong>Stat Points:</strong> These contribute to your overall player level.</li>
+        <li><strong>Player Effects:</strong> These provide boosts and special protections, either passive or active. Effects can be innate, granted by equipping a class/job or title. Titles are also achieved through quests.</li>
+    </ul>
+
+    <p>2. <strong>Job Page:</strong> List the jobs you're interested in acquiring and leveling up. Acquiring a job means you can have job-specific skills and quests.</p>
+
+    <p>3. <strong>Skills Page:</strong> Track the level and progress of all your attained skills. You can toggle between mental and physical skills and track progress by hours or repetitions. To reach the max level of 100, you must input 10,000 hours or repetitions.</p>
+
+    <p>4. <strong>Quests Page:</strong> Add and manage your quests here. You can set a recurrence interval for quests, measured in seconds. When a quest's recurrence interval is completed, it will return to the active list. If you fail a quest, you will need to manually move it back to the active list when ready to try again. Rewards, such as Titles or Stat Points, will be reflected in the Status Page.</p>
+
+    <button onclick="goBack()">Back</button>
+</div>
+
+  
+  
+ <!-- Player Status Page (Hidden by default) -->
+<div id="player-status-page" class="container">
+    <h1>Player Status</h1>
+    <div id="status-scroll-container" class="scrollable-container">
+        <section class="player-info">
+            <h2>Player Info</h2>
+            <p><strong>Player Level:</strong> <span id="player-level">1</span></p>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="player-level-progress-bar"></div>
+            </div>
+            <p><strong>Job:</strong> <span id="job-class" contenteditable="true">Warrior</span></p>
+
+            <p><strong>Title:</strong> <span id="titles" contenteditable="true">Novice</span></p>
+        </section>
+        <section class="player-stats">
+            <h2>Player Stats</h2>
+            <ul id="stat-list">
+                <li>
+                    <strong>Strength:</strong>
+                    <span id="strength">10</span>
+                    <div class="stat-buttons">
+                        <button class="stat-button" data-stat="strength" data-change="1">+</button>
+                        <button class="stat-button" data-stat="strength" data-change="-1">-</button>
+                    </div>
+                </li>
+                <li>
+                    <strong>Agility:</strong>
+                    <span id="agility">8</span>
+                    <div class="stat-buttons">
+                        <button class="stat-button" data-stat="agility" data-change="1">+</button>
+                        <button class="stat-button" data-stat="agility" data-change="-1">-</button>
+                    </div>
+                </li>
+                <li>
+                    <strong>Intelligence:</strong>
+                    <span id="intelligence">9</span>
+                    <div class="stat-buttons">
+                        <button class="stat-button" data-stat="intelligence" data-change="1">+</button>
+                        <button class="stat-button" data-stat="intelligence" data-change="-1">-</button>
+                    </div>
+                </li>
+                <li>
+                    <strong>Sense:</strong>
+                    <span id="sense">6</span>
+                    <div class="stat-buttons">
+                        <button class="stat-button" data-stat="sense" data-change="1">+</button>
+                        <button class="stat-button" data-stat="sense" data-change="-1">-</button>
+                    </div>
+                </li>
+            </ul>
+        </section>
+        <section class="effects-section">
+            <h2>Active and Passive Effects</h2>
+            <ul id="effects-list" contenteditable="true">
+                <li>Class Effects: </li>
+                <li>Title Effects: </li>
+            </ul>
+        </section>
+    </div>
+    <button onclick="goBack()" class="back-button">Back</button>
+</div>
+
+<script>
+    // Save content to localStorage
+    function saveEffects() {
+        const effectsList = document.getElementById('effects-list');
+        localStorage.setItem('effectsListContent', effectsList.innerHTML);
+    }
+
+    function saveJobClass() {
+        const jobClass = document.getElementById('job-class');
+        localStorage.setItem('jobClassContent', jobClass.innerHTML);
+    }
+
+    function saveTitle() {
+        const title = document.getElementById('titles');
+        localStorage.setItem('titleContent', title.innerHTML);
+    }
+
+    // Load content from localStorage
+    function loadEffects() {
+        const savedContent = localStorage.getItem('effectsListContent');
+        if (savedContent) {
+            const effectsList = document.getElementById('effects-list');
+            effectsList.innerHTML = savedContent;
+        }
+    }
+
+    function loadJobClass() {
+        const savedContent = localStorage.getItem('jobClassContent');
+        if (savedContent) {
+            const jobClass = document.getElementById('job-class');
+            jobClass.innerHTML = savedContent;
+        }
+    }
+
+    function loadTitle() {
+        const savedContent = localStorage.getItem('titleContent');
+        if (savedContent) {
+            const title = document.getElementById('titles');
+            title.innerHTML = savedContent;
+        }
+    }
+
+    // Event listener to save content when changed
+    document.getElementById('effects-list').addEventListener('input', saveEffects);
+    document.getElementById('job-class').addEventListener('input', saveJobClass);
+    document.getElementById('titles').addEventListener('input', saveTitle);
+
+    // Load the content when the page loads
+    window.addEventListener('load', function() {
+        loadEffects();
+        loadJobClass();
+        loadTitle();
+    });
+</script>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+<!-- Skills Dashboard Page (Hidden by default) -->
+<div id="skills-dashboard" class="container" style="display: none;">
+    <h1>Skills</h1>
+    <button onclick="showSkillList('mental')">Mental Skills</button>
+    <button onclick="showSkillList('physical')">Physical Skills</button>
+
+    <div id="mental-skills" class="hidden">
+        <h2>Mental Skills</h2>
+        <div class="scrollable-list">
+            <ul id="mental-skill-list"></ul>
+        </div>
+        <button onclick="showSkillManagement('mental')">Add Mental Skills</button>
+        <button onclick="goBack()">Back</button>
+    </div>
+
+    <div id="physical-skills" class="hidden">
+        <h2>Physical Skills</h2>
+        <div class="scrollable-list">
+            <ul id="physical-skill-list"></ul>
+        </div>
+        <button onclick="showSkillManagement('physical')">Add Physical Skills</button>
+        <button onclick="goBack()">Back</button>
+    </div>
+
+    <div id="skill-details" class="hidden">
+        <h2 id="skill-name"></h2>
+        <p>Experience: <span id="experience">0</span> points</p>
+        <p>Level: <span id="level">1</span></p>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="experience-bar"></div>
+        </div>
+        <button id="hour-button" onmousedown="startAddingPoints(1)" onmouseup="stopAddingPoints()" onmouseleave="stopAddingPoints()">+ 1 Hr/Rep</button>
+        <button id="minute-button" onmousedown="startAddingPoints(0.5)" onmouseup="stopAddingPoints()" onmouseleave="stopAddingPoints()">+ 1/2 Hr/Rep</button>
+        <button id="remove-hour-button" onmousedown="startRemovingPoints(1)" onmouseup="stopRemovingPoints()" onmouseleave="stopRemovingPoints()">- 1 Hr/Rep</button>
+        <button id="remove-minute-button" onmousedown="startRemovingPoints(0.5)" onmouseup="stopRemovingPoints()" onmouseleave="stopRemovingPoints()">- 1/2 Hr/Rep</button>
+        
+        <!-- Editable Skill Description Section -->
+        <div id="skill-description-container">
+            <h3>Description</h3>
+            <div id="skill-description" contenteditable="true" placeholder="Enter a description..."></div>
+        </div>
+        
+        <button onclick="goBack()">Back</button>
+    </div>
+
+    <div id="skill-management" class="hidden">
+        <h2 id="management-title"></h2>
+        <div class="scrollable-container">
+            <ul id="skill-list"></ul>
+        </div>
+        <input type="text" id="new-skill-name" placeholder="New Skill Name">
+        <button onclick="addSkill()">Add Skill</button>
+        <button onclick="goBack()">Back</button>
+    </div>
+</div>
+
+
+  
+  
+  
+  
+<!-- Quests Page -->
+<div id="quests-page" class="container" style="display: none;">
+    <h1>Quests</h1>
+  
+    <button onclick="showQuestPage('make-quest')">Make Quest</button>
+    <button onclick="goBackToMenu()">Back to Menu</button>
+
+    <!-- Active Quests Section -->
+    <h2>Active Quests</h2>
+    <div id="quest-list" class="scrollable-list"></div>
+
+    <!-- Completed Quests Section -->
+    <h2>Completed Quests</h2>
+    <div id="completed-quest-list" class="scrollable-list"></div>
+
+    <!-- Failed Quests Section -->
+    <h2>Failed Quests</h2>
+    <div id="failed-quest-list" class="scrollable-list"></div>
+</div>
+
+<!-- Quest Info Page (Hidden by default) -->
+<div id="quest-info-page" class="container" style="display: none;">
+    <div id="quest-info">
+        <h2 id="quest-title"></h2>
+        <p id="quest-details"></p>
+        <p id="quest-reward"></p>
+        <p id="quest-class-tag"></p>
+        <p id="quest-punishment"></p>
+        
+        <!-- Flexbox container for buttons -->
+        <div class="button-container">
+            <button onclick="markQuestAsCompleted()">Complete Quest</button>
+            <button onclick="markQuestAsFailed()">Fail Quest</button>
+            <button onclick="moveQuestToActive()">Move to Active</button> <!-- New Move to Active Button -->
+            <button onclick="deleteQuest()">Delete Quest</button> <!-- New Delete Button -->
+            <button onclick="closeQuestInfo()">Close</button>
         </div>
     </div>
-    <script src="script.js"></script>
+</div>
+
+
+<!-- Make Quest Page -->
+<div id="make-quest-page" class="container" style="display: none;">
+    <h1>Make a Quest</h1>
+    <form id="quest-form">
+        <label for="quest-title-input">Quest Title:</label>
+        <input type="text" id="quest-title-input" required>
+        
+        <label for="quest-description-input">Quest Description:</label>
+        <textarea id="quest-description-input" required></textarea>
+        
+        <label for="quest-reward-input">Reward:</label>
+        <input type="text" id="quest-reward-input" placeholder="e.g., Stat Points or Title">
+        
+        <label for="quest-class-tag">Class Tag:</label>
+        <input type="text" id="quest-class-tag">
+        
+        <label for="quest-punishment-input">Punishment (optional):</label>
+        <input type="text" id="quest-punishment-input">
+        
+        <label for="quest-recurrence">Recurrence Interval (seconds):</label>
+        <input type="number" id="quest-recurrence" min="0" placeholder="Enter seconds (0 for no recurrence)">
+        
+        <button type="button" onclick="cancelQuest()">Cancel</button>
+        <button type="button" onclick="submitQuest()">Submit</button>
+       
+    </form>
+</div>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+<!-- Job Page -->
+<div id="job-page" class="container" style="display: none;">
+    <h1>Jobs</h1>
+    <button onclick="showJobPage('create-job')">Create Job</button>
+    <button onclick="goBackToMenu()">Back to Menu</button>
+    
+    <!-- Job List Section -->
+    <div id="job-list-container" class="scrollable-list">
+        <!-- Job list items will be inserted here dynamically -->
+    </div>
+</div>
+
+<!-- Job Info Page (Hidden by default) -->
+<div id="job-info-page" class="container" style="display: none;">
+    <div id="job-info">
+        <h2 id="job-title"></h2>
+        <p id="job-description"></p>
+        <div id="job-experience-info">
+            <p id="job-experience">Experience: 0</p>
+            <p id="job-level">Level: 1</p>
+            <div id="job-experience-bar" class="progress-bar"></div>
+        </div>
+        <button onclick="addJobExperience(100)">Add 100 Points</button>
+        <button onclick="subtractJobExperience(100)">Subtract 100 Points</button>
+        <button onclick="goBacktoJobPage()">Back</button>
+        <button id="delete-job-button" onclick="deleteJob()">Delete</button> <!-- Delete Job Button -->
+    </div>
+</div>
+
+
+<!-- Create Job Page -->
+<div id="create-job-page" class="container" style="display: none;">
+    <h1>Create a Job</h1>
+    <form id="job-form">
+        <label for="job-title-input">Job Title:</label>
+        <input type="text" id="job-title-input" required>
+        
+        <label for="job-description-input">Job Description:</label>
+        <textarea id="job-description-input" required></textarea>
+        
+        <button type="button" onclick="cancelJob()">Cancel</button>
+        <button type="button" onclick="submitJob()">Submit</button>
+        
+    </form>
+</div>
+  
+  
+  
+  
+    <script src="main.js"></script>
+  
+  
+  
 </body>
 </html>
