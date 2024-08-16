@@ -827,11 +827,29 @@ function stopJobExperienceChange() {
     jobExperienceInterval = null;
 }
 
+
+
+
+// Subtract experience points
+function subtractJobExperience(points) {
+    if (currentJobIndex !== null) {
+        const job = jobs[currentJobIndex];
+        if (job.experience - 1 >= 0) { // Ensure experience does not go below zero
+            job.experience -= 1;
+            updateJobLevel(currentJobIndex); // Update level based on new experience
+            updateJobInfoPage(); // Refresh the job info page
+        }
+    }
+}
+
+
+
+
 // Add experience points
 function addJobExperience(points) {
     if (currentJobIndex !== null) {
         const job = jobs[currentJobIndex];
-        if (job.experience + points <= 10000) { // Ensure experience does not exceed maximum
+        if (job.experience + 1 <= 10000) { // Ensure experience does not exceed maximum
             job.experience += 1;
             updateJobLevel(currentJobIndex); // Update level based on new experience
             updateJobInfoPage(); // Refresh the job info page
@@ -839,17 +857,7 @@ function addJobExperience(points) {
     }
 }
 
-// Subtract experience points
-function subtractJobExperience(points) {
-    if (currentJobIndex !== null) {
-        const job = jobs[currentJobIndex];
-        if (job.experience - points >= 0) { // Ensure experience does not go below zero
-            job.experience -= 1;
-            updateJobLevel(currentJobIndex); // Update level based on new experience
-            updateJobInfoPage(); // Refresh the job info page
-        }
-    }
-}
+
 
 // Update job information page
 function updateJobInfoPage() {
