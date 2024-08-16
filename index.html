@@ -375,8 +375,8 @@
             <p id="job-level">Level: 1</p>
             <div id="job-experience-bar" class="progress-bar"></div>
         </div>
-        <button onclick="addJobExperience(100)">Add 100 Points</button>
-        <button onclick="subtractJobExperience(100)">Subtract 100 Points</button>
+        <button onclick="addJobExperience(100)">+ 1</button>
+        <button onclick="subtractJobExperience(100)">- 1</button>
         <button onclick="goBacktoJobPage()">Back</button>
         <button id="delete-job-button" onclick="deleteJob()">Delete</button> <!-- Delete Job Button -->
     </div>
@@ -393,11 +393,12 @@
         <label for="job-description-input">Job Description:</label>
         <textarea id="job-description-input" required></textarea>
         
-        <button type="button" onclick="cancelJob()">Cancel</button>
+        <button type="button" onclick="cancelJobCreation()">Cancel</button>
         <button type="button" onclick="submitJob()">Submit</button>
         
     </form>
 </div>
+  
   
   
   
