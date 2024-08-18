@@ -29,6 +29,7 @@ body {
 
 
 
+/* Container */
 .container {
     background-color: var(--background-color);
     padding: 20px;
@@ -37,6 +38,25 @@ body {
     text-align: center;
     width: 90%;
     max-width: 600px;
+    max-height: 90vh; /* Set a maximum height */
+    overflow-y: auto; /* Make the container scrollable */
+    margin: 20px auto; /* Center the container with some top/bottom margin */
+    scrollbar-width: thin; /* Firefox scrollbar width */
+    scrollbar-color: var(--primary-color) var(--background-color); /* Firefox scrollbar colors */
+}
+
+/* Custom Scrollbar Styles for Webkit (Chrome, Safari) within Containers */
+.container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.container::-webkit-scrollbar-thumb {
+    background-color: var(--primary-color); /* Neon blue color for scrollbar thumb */
+    border-radius: 10px;
+}
+
+.container::-webkit-scrollbar-track {
+    background-color: var(--background-color);
 }
 
 /* Headings */
@@ -458,6 +478,30 @@ ul#skill-list li:hover {
 }
 
 
+
+
+
+
+/* Search bar styles */
+input[type="text"] {
+    width: 50%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 2px solid #007bff; /* Neon blue border */
+    border-radius: 10px;
+    font-size: 16px;
+    background-color: #fff; /* Background color */
+    color: #333; /* Text color */
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+input[type="text"]:focus {
+    border-color: #00f0ff; /* Brighter neon blue on focus */
+    box-shadow: 0 0 8px rgba(0, 240, 255, 0.8); /* Neon blue glow effect */
+    outline: none;
+    background-color: #f0f8ff; /* Light blue background on focus */
+}
 
 
 
