@@ -793,11 +793,12 @@ function displayFilteredJobs(filteredJobs) {
     filteredJobs.forEach((job, index) => {
         const jobItem = document.createElement('div');
         jobItem.className = 'job-item';
-        jobItem.innerHTML = `<strong>${job.title}</strong><br>${job.description}`;
+        jobItem.innerHTML = `<strong>${job.title}</strong>`; // Only display the title
         jobItem.onclick = () => showJobInfo(job, index); // Pass the index to the showJobInfo function
         jobListContainer.appendChild(jobItem);
     });
 }
+
 
 
 // Show the relevant job page
@@ -822,11 +823,12 @@ function populateJobList() {
     jobs.forEach((job, index) => {
         const jobItem = document.createElement('div');
         jobItem.className = 'job-item';
-        jobItem.innerHTML = `<strong>${job.title}</strong><br>${job.description}`;
+        jobItem.innerHTML = `<strong>${job.title}</strong>`; // Only display the title
         jobItem.onclick = () => showJobInfo(job, index); // Pass the index to the showJobInfo function
         jobListContainer.appendChild(jobItem);
     });
 }
+
 
 // Show job information
 function showJobInfo(job, index) {
