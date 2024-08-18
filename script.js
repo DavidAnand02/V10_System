@@ -553,12 +553,43 @@ function showQuestInfo(quest) {
     document.getElementById('quest-info-page').style.display = 'block';
     document.getElementById('quests-page').style.display = 'none';
 
-    document.getElementById('quest-title').innerText = quest.title;
-    document.getElementById('quest-details').innerText = quest.description;
-    document.getElementById('quest-reward').innerText = `Reward: ${quest.reward || 'None'}`;
-    document.getElementById('quest-class-tag').innerText = `Class Tag: ${quest.classTag || 'None'}`;
-    document.getElementById('quest-punishment').innerText = `Punishment: ${quest.punishment || 'None'}`;
+    const questTitleElement = document.getElementById('quest-title');
+    const questDetailsElement = document.getElementById('quest-details');
+    const questRewardElement = document.getElementById('quest-reward');
+    const questClassTagElement = document.getElementById('quest-class-tag');
+    const questPunishmentElement = document.getElementById('quest-punishment');
+
+    // Set initial values
+    questTitleElement.innerText = quest.title;
+    questDetailsElement.innerText = quest.description;
+    questRewardElement.innerText = `Reward: ${quest.reward || 'None'}`;
+    questClassTagElement.innerText = `Class Tag: ${quest.classTag || 'None'}`;
+    questPunishmentElement.innerText = `Punishment: ${quest.punishment || 'None'}`;
+
+    // Store the quest index
     document.getElementById('quest-info').dataset.questIndex = quests.indexOf(quest);
+
+    // Add event listeners for real-time updates
+    questTitleElement.addEventListener('input', function () {
+        quest.title = this.innerText;
+        saveQuestsToLocalStorage();
+    });
+    questDetailsElement.addEventListener('input', function () {
+        quest.description = this.innerText;
+        saveQuestsToLocalStorage();
+    });
+    questRewardElement.addEventListener('input', function () {
+        quest.reward = this.innerText.replace('Reward: ', '');
+        saveQuestsToLocalStorage();
+    });
+    questClassTagElement.addEventListener('input', function () {
+        quest.classTag = this.innerText.replace('Class Tag: ', '');
+        saveQuestsToLocalStorage();
+    });
+    questPunishmentElement.addEventListener('input', function () {
+        quest.punishment = this.innerText.replace('Punishment: ', '');
+        saveQuestsToLocalStorage();
+    });
 
     // Conditionally show the "Move to Active" button
     const moveToActiveButton = document.querySelector('button[onclick="moveQuestToActive()"]');
@@ -568,6 +599,8 @@ function showQuestInfo(quest) {
         moveToActiveButton.style.display = 'none';
     }
 }
+
+
 
 function moveQuestToActive() {
     const questIndex = document.getElementById('quest-info').dataset.questIndex;
@@ -714,6 +747,9 @@ function resetRecurringQuests() {
 
 // Run the resetRecurringQuests function periodically
 setInterval(resetRecurringQuests, 1000); // Check every second for testing
+
+
+
 
 
 
@@ -965,7 +1001,6 @@ function updateJobProgressBarUI(id, value, maxValue) {
     progressBar.style.width = `${percentage}%`;
 }
 
-// Create a new job
 function submitJob() {
     const title = document.getElementById('job-title-input').value;
     const description = document.getElementById('job-description-input').value;
@@ -982,7 +1017,6 @@ function submitJob() {
     }
 }
 
-// Delete the current job
 function deleteJob() {
     if (currentJobIndex !== null) {
         jobs.splice(currentJobIndex, 1); // Remove the job from the array
@@ -991,6 +1025,7 @@ function deleteJob() {
         populateJobList(); // Refresh the job list
     }
 }
+
 
 // Close job info page and go back to job list
 function closeJobInfoPage() {
@@ -1014,9 +1049,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // Show the landing page or another default page
     document.getElementById('landing-page').style.display = 'block';
     
+    // Load jobs from localStorage
+    const savedJobs = JSON.parse(localStorage.getItem('jobs'));
+    if (savedJobs) {
+        jobs.splice(0, jobs.length, ...savedJobs); // Replace the current jobs with saved jobs
+    }
+
     // Initialize search functionality
     initSearch();
 });
+
 
 function goBacktoJobPage() {
     const currentPage = document.querySelector('.container[style*="block"]');
@@ -1028,4 +1070,3 @@ function goBacktoJobPage() {
         showJobPage('job-log');
     }
 }
-
