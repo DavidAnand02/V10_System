@@ -496,13 +496,6 @@ input[type="text"] {
     transition: border-color 0.3s, box-shadow 0.3s;
 }
 
-input[type="text"]:focus {
-    border-color: #00f0ff; /* Brighter neon blue on focus */
-    box-shadow: 0 0 8px rgba(0, 240, 255, 0.8); /* Neon blue glow effect */
-    outline: none;
-    background-color: #f0f8ff; /* Light blue background on focus */
-}
-
 
 
 
