@@ -15,7 +15,7 @@
   
   
   
-  
+   
 <!-- Landing Page -->
 <div id="landing-page" class="container">
     <!-- Info Button -->
@@ -23,16 +23,16 @@
         ⓘ
     </button>
   
-  
+      
       <!-- Background Audio -->
 <!-- Discrete Music Controls -->
 <div style="position: fixed; top: 5px; right: 10px; z-index: 1000; opacity: 0.75; display: flex; align-items: center;">
     <!-- Start Button -->
-    <button style="background: none; border: none; font-size: 16px; cursor: pointer; margin-right: 5px;" onclick="document.getElementById('background-audio').play()" title="Play Music">
+  <button style="background: none; border: none; font-size: 16px; cursor: pointer; margin-right: 5px;" onclick="document.getElementById('background-audio').play()" title="Play Music">
         &#9654; <!-- Play Icon -->
     </button>
     <!-- Stop Button -->
-    <button style="background: none; border: none; font-size: 18px; cursor: pointer; margin-right: 5px;" onclick="document.getElementById('background-audio').currentTime = 0; document.getElementById('background-audio').pause()" title="Stop Music">
+  <button style="background: none; border: none; font-size: 18px; cursor: pointer; margin-right: 5px;" onclick="document.getElementById('background-audio').currentTime = 0; document.getElementById('background-audio').pause()" title="Stop Music">
         &#9632; <!-- Stop Icon -->
     </button>
     <!-- Volume Slider -->
@@ -44,7 +44,6 @@
 
 <audio id="background-audio" src="https://raw.githubusercontent.com/DavidAnand02/V14_System/371679d8a3d997a41b8a5ae19947ce90beb56d72/%5BNo%20Copyright%5D%20Fuzzeke%20-%20Are%20You%20With%20Us_%20%5BGaming%20Menu%20Music%5D.mp3" loop></audio>
 
-  
   
     <h1>Welcome Player</h1>
     <p>You now have the qualifications to begin.</p>
@@ -395,6 +394,7 @@ function saveChanges(event) {
   
   
   
+ 
 <!-- Job Page -->
 <div id="job-page" class="container" style="display: none;">
     <h1>Jobs</h1>
@@ -426,7 +426,7 @@ function saveChanges(event) {
       
         <button onclick="addJobExperience(100)">+ 1 Hr/Rep</button>
         <button onclick="subtractJobExperience(100)">- 1 Hr/Rep</button>
-        <button onclick="goBacktoJobPage()">Back</button>
+      <button onclick="goBacktoJobPage()">Back</button>
         <button id="delete-job-button" onclick="deleteJob()" style="background-color: red; color: white;">Delete</button>
  <!-- Delete Job Button -->
     </div>
@@ -451,26 +451,21 @@ function saveChanges(event) {
 <script>
     let currentJob = {};
 
-    function showJobInfo(job) {
-        currentJob = job;
-        document.getElementById("job-title").innerText = job.title;
-        document.getElementById("job-description").innerText = job.description;
-        document.getElementById("job-info-page").style.display = "block";
-        document.getElementById("job-page").style.display = "none";
-    }
 
-    function saveJobDescription() {
-        const updatedDescription = document.getElementById("job-description").innerText;
-        currentJob.description = updatedDescription;
-        // Update the job list or persist the changes (e.g., send an update request to the server)
+function saveJobDescription() {
+    if (currentJobIndex !== null) {
+        const updatedDescription = document.getElementById('job-description').innerText;
+        jobs[currentJobIndex].description = updatedDescription;
+        saveJobs(); // Save the updated jobs array to localStorage
         console.log("Updated Description: ", updatedDescription);
     }
+}
+
 
     // Other existing functions like addJobExperience, subtractJobExperience, etc.
 
 </script>
 
-  
   
   
   
