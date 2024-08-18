@@ -1028,3 +1028,4 @@ function goBacktoJobPage() {
         showJobPage('job-log');
     }
 }
+
