@@ -280,24 +280,35 @@ const maxLevel = 100;
 const maxExperience = 10000;
 let interval;
 
+function filterSkills(type) {
+    const searchTerm = document.getElementById(`${type}-skill-search`).value.toLowerCase();
+    const skillList = document.getElementById(`${type}-skill-list`);
+    skillList.innerHTML = '';
+
+    skills[type].forEach(skill => {
+        if (skill.toLowerCase().includes(searchTerm)) {
+            const li = document.createElement('li');
+            li.innerHTML = `${skill} <button class="remove-skill-button" onclick="removeSkill('${type}', '${skill}')">Remove</button>`;
+            li.onclick = () => showSkillDetails(skill);
+            skillList.appendChild(li);
+        }
+    });
+}
+
 function showSkillList(type) {
     document.getElementById('mental-skills').classList.add('hidden');
     document.getElementById('physical-skills').classList.add('hidden');
     document.getElementById('skill-details').classList.add('hidden');
     document.getElementById('skill-management').classList.add('hidden');
     
-    const skillList = document.getElementById(`${type}-skill-list`);
-    skillList.innerHTML = '';
+    // Clear the search input when switching between skill types
+    document.getElementById(`${type}-skill-search`).value = '';
     
-    skills[type].forEach(skill => {
-        const li = document.createElement('li');
-        li.innerHTML = `${skill} <button class="remove-skill-button" onclick="removeSkill('${type}', '${skill}')">Remove</button>`;
-        li.onclick = () => showSkillDetails(skill);
-        skillList.appendChild(li);
-    });
+    filterSkills(type);
     
     document.getElementById(`${type}-skills`).classList.remove('hidden');
 }
+
 
 
 function showSkillDetails(skill) {
@@ -497,33 +508,43 @@ function showQuestPage(page) {
     }
 }
 
+// Function to display quest logs with search filters
 function displayQuestLog() {
     const questList = document.getElementById('quest-list');
     const completedQuestList = document.getElementById('completed-quest-list');
     const failedQuestList = document.getElementById('failed-quest-list');
+    const searchActive = document.getElementById('search-active').value.toLowerCase();
+    const searchCompleted = document.getElementById('search-completed').value.toLowerCase();
+    const searchFailed = document.getElementById('search-failed').value.toLowerCase();
     
+    // Clear existing lists
     questList.innerHTML = '';
     completedQuestList.innerHTML = '';
     failedQuestList.innerHTML = '';
 
+    // Filter and display quests
     quests.forEach(quest => {
         const questItem = document.createElement('div');
         questItem.className = 'quest-item';
-
         questItem.innerHTML = `
             <h3>${quest.title}</h3>
             <p><strong>Reward:</strong> ${quest.reward || 'None'}</p>
             <p><strong>Punishment:</strong> ${quest.punishment || 'None'}</p>
         `;
-
         questItem.onclick = () => showQuestInfo(quest);
 
         if (quest.status === 'in-progress') {
-            questList.appendChild(questItem);
+            if (quest.title.toLowerCase().includes(searchActive)) {
+                questList.appendChild(questItem);
+            }
         } else if (quest.status === 'completed') {
-            completedQuestList.appendChild(questItem);
+            if (quest.title.toLowerCase().includes(searchCompleted)) {
+                completedQuestList.appendChild(questItem);
+            }
         } else if (quest.status === 'failed') {
-            failedQuestList.appendChild(questItem);
+            if (quest.title.toLowerCase().includes(searchFailed)) {
+                failedQuestList.appendChild(questItem);
+            }
         }
     });
 }
@@ -568,12 +589,6 @@ function markQuestAsCompleted() {
     quest.status = 'completed';
     quest.lastCompleted = Date.now(); // Record the exact time
 
-    if (quest.recurs && quest.recurrenceInterval === 0) {
-        // Immediately move it back to active if recurrence interval is set to 0 seconds
-        quest.status = 'in-progress';
-        quest.lastCompleted = null;
-    }
-
     saveQuestsToLocalStorage();  // Save to localStorage
     updateQuestLogs();
     closeQuestInfo();
@@ -606,10 +621,10 @@ function submitQuest() {
     const reward = document.getElementById('quest-reward-input').value;
     const classTag = document.getElementById('quest-class-tag').value;
     const punishment = document.getElementById('quest-punishment-input').value;
-    const recurrenceInterval = parseInt(document.getElementById('quest-recurrence').value);
+    const activationTime = document.getElementById('quest-activation-time').value;
 
-    if (title && description) {
-        quests.push({
+    if (title && description) { // No need to check activationTime here
+        const newQuest = {
             title: title,
             description: description,
             reward: reward,
@@ -617,14 +632,22 @@ function submitQuest() {
             punishment: punishment,
             experience: 1000, // Default experience value
             status: 'in-progress',
-            recurs: !!recurrenceInterval,
-            recurrenceInterval: recurrenceInterval || null,
-            lastCompleted: null
-        });
+            lastCompleted: null,
+        };
+
+        // Only include activationTime if it is provided
+        if (activationTime) {
+            newQuest.activationTime = activationTime;
+        }
+
+        quests.push(newQuest);
         saveQuestsToLocalStorage();  // Save to localStorage
         showQuestPage('quest-log');
     }
 }
+
+
+
 
 function cancelQuest() {
     showQuestPage('quest-log');
@@ -640,16 +663,21 @@ function saveQuestsToLocalStorage() {
 
 // Initialize the page
 document.addEventListener('DOMContentLoaded', () => {
-    // Load quests from localStorage
     const storedQuests = localStorage.getItem('quests');
     if (storedQuests) {
         quests = JSON.parse(storedQuests);
     }
 
+    // Initial setup
     document.getElementById('quests-page').style.display = 'none';
     document.getElementById('make-quest-page').style.display = 'none';
     document.getElementById('quest-info-page').style.display = 'none';
     document.getElementById('landing-page').style.display = 'block';
+
+    // Event listeners for search inputs
+    document.getElementById('search-active').addEventListener('input', displayQuestLog);
+    document.getElementById('search-completed').addEventListener('input', displayQuestLog);
+    document.getElementById('search-failed').addEventListener('input', displayQuestLog);
 
     resetRecurringQuests();
 });
@@ -661,31 +689,31 @@ function goBackToMenu() {
 }
 
 function resetRecurringQuests() {
-    const currentTime = Date.now();
+    const currentTime = new Date();
+    const currentHours = currentTime.getHours();
+    const currentMinutes = currentTime.getMinutes();
+
     quests.forEach(quest => {
-        if (quest.recurs && quest.lastCompleted) {
-            const elapsedTime = currentTime - quest.lastCompleted;
-            if (elapsedTime >= quest.recurrenceInterval * 1000) {
-                quest.status = 'in-progress';
-                quest.lastCompleted = null; // Reset the lastCompleted timestamp
+        // Handle daily reactivation only if activationTime is defined
+        if (quest.activationTime) {
+            const [activationHours, activationMinutes] = quest.activationTime.split(':').map(Number);
+
+            if (currentHours === activationHours && currentMinutes === activationMinutes) {
+                if (quest.status === 'completed' || quest.status === 'failed') {
+                    quest.status = 'in-progress';
+                    quest.lastCompleted = null; // Reset the lastCompleted timestamp
+                }
             }
         }
     });
+
     saveQuestsToLocalStorage();  // Save to localStorage
     updateQuestLogs(); // Ensure the quest log is updated immediately after resetting
 }
 
+
 // Run the resetRecurringQuests function periodically
 setInterval(resetRecurringQuests, 1000); // Check every second for testing
-
-
-
-
-
-
-
-
-
 
 
 
@@ -739,6 +767,38 @@ const jobs = savedJobs || [
 function saveJobs() {
     localStorage.setItem('jobs', JSON.stringify(jobs));
 }
+
+
+// Initialize search functionality
+function initSearch() {
+    const searchInput = document.getElementById('job-search');
+    searchInput.addEventListener('input', filterJobs);
+}
+
+// Filter jobs based on search query
+function filterJobs() {
+    const query = document.getElementById('job-search').value.toLowerCase();
+    const filteredJobs = jobs.filter(job =>
+        job.title.toLowerCase().includes(query) || 
+        job.description.toLowerCase().includes(query)
+    );
+    displayFilteredJobs(filteredJobs);
+}
+
+// Display filtered jobs
+function displayFilteredJobs(filteredJobs) {
+    const jobListContainer = document.getElementById('job-list-container');
+    jobListContainer.innerHTML = ''; // Clear existing content
+
+    filteredJobs.forEach((job, index) => {
+        const jobItem = document.createElement('div');
+        jobItem.className = 'job-item';
+        jobItem.innerHTML = `<strong>${job.title}</strong><br>${job.description}`;
+        jobItem.onclick = () => showJobInfo(job, index); // Pass the index to the showJobInfo function
+        jobListContainer.appendChild(jobItem);
+    });
+}
+
 
 // Show the relevant job page
 function showJobPage(page) {
@@ -941,6 +1001,7 @@ function cancelJobCreation() {
     showJobPage('job-log');
 }
 
+
 // Initialize the page
 document.addEventListener('DOMContentLoaded', () => {
     // Hide all pages initially
@@ -950,6 +1011,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Show the landing page or another default page
     document.getElementById('landing-page').style.display = 'block';
+    
+    // Initialize search functionality
+    initSearch();
 });
 
 function goBacktoJobPage() {
