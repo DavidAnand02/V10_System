@@ -260,7 +260,7 @@
             <div id="skill-description" contenteditable="true" placeholder="Enter a description..."></div>
         </div>
         
-      
+       
     </div>
 
     <div id="skill-management" class="hidden">
@@ -312,22 +312,51 @@
 <!-- Quest Info Page (Hidden by default) -->
 <div id="quest-info-page" class="container" style="display: none;">
     <div id="quest-info">
-        <h2 id="quest-title"></h2>
-        <p id="quest-details"></p>
-        <p id="quest-reward"></p>
-        <p id="quest-class-tag"></p>
-        <p id="quest-punishment"></p>
+        <h2 id="quest-title" onclick="makeEditable(this)"></h2>
+        <p id="quest-details" onclick="makeEditable(this)"></p>
+        <p id="quest-reward" onclick="makeEditable(this)"></p>
+        <p id="quest-class-tag" onclick="makeEditable(this)"></p>
+        <p id="quest-punishment" onclick="makeEditable(this)"></p>
         
         <!-- Flexbox container for buttons -->
         <div class="button-container">
             <button onclick="markQuestAsCompleted()">Complete Quest</button>
             <button onclick="markQuestAsFailed()">Fail Quest</button>
-            <button onclick="moveQuestToActive()">Move to Active</button> <!-- New Move to Active Button -->
-            <button onclick="deleteQuest()">Delete Quest</button> <!-- New Delete Button -->
+            <button onclick="moveQuestToActive()">Move to Active</button>
+            <button onclick="deleteQuest()">Delete Quest</button>
             <button onclick="closeQuestInfo()">Close</button>
         </div>
     </div>
 </div>
+
+<script>
+// Function to make a text element editable
+function makeEditable(element) {
+    if (element.contentEditable === "true") return;
+
+    element.contentEditable = "true";
+    element.focus();
+
+    // Save changes when the user clicks outside or presses Enter
+    element.addEventListener("blur", saveChanges);
+    element.addEventListener("keydown", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            element.blur();
+        }
+    });
+}
+
+// Function to save changes made to the text
+function saveChanges(event) {
+    const element = event.target;
+    element.contentEditable = "false";
+
+    // Perform any additional actions, like saving to a database or updating a list
+    console.log("Updated text:", element.innerText);
+}
+</script>
+
 
 
 <!-- Make Quest Page -->
@@ -368,9 +397,8 @@
 <!-- Job Page -->
 <div id="job-page" class="container" style="display: none;">
     <h1>Jobs</h1>
-  <button onclick="goBackToMenu()">Back</button>
+    <button onclick="goBackToMenu()">Back</button>
     <button onclick="showJobPage('create-job')">Create Job</button>
-    
     
     <!-- Search Bar -->
     <input type="text" id="job-search" placeholder="Search jobs...">
@@ -381,12 +409,14 @@
     </div>
 </div>
 
-
 <!-- Job Info Page (Hidden by default) -->
 <div id="job-info-page" class="container" style="display: none;">
     <div id="job-info">
         <h2 id="job-title"></h2>
-        <p id="job-description"></p>
+        
+        <!-- Editable Job Description -->
+        <p id="job-description" contenteditable="true" onblur="saveJobDescription()"></p>
+        
         <div id="job-experience-info">
             <p id="job-experience">Experience: 0</p>
             <p id="job-level">Level: 1</p>
@@ -398,7 +428,6 @@
         <button id="delete-job-button" onclick="deleteJob()">Delete</button> <!-- Delete Job Button -->
     </div>
 </div>
-
 
 <!-- Create Job Page -->
 <div id="create-job-page" class="container" style="display: none;">
@@ -415,7 +444,29 @@
         
     </form>
 </div>
-  
+
+<script>
+    let currentJob = {};
+
+    function showJobInfo(job) {
+        currentJob = job;
+        document.getElementById("job-title").innerText = job.title;
+        document.getElementById("job-description").innerText = job.description;
+        document.getElementById("job-info-page").style.display = "block";
+        document.getElementById("job-page").style.display = "none";
+    }
+
+    function saveJobDescription() {
+        const updatedDescription = document.getElementById("job-description").innerText;
+        currentJob.description = updatedDescription;
+        // Update the job list or persist the changes (e.g., send an update request to the server)
+        console.log("Updated Description: ", updatedDescription);
+    }
+
+    // Other existing functions like addJobExperience, subtractJobExperience, etc.
+
+</script>
+
   
   
   
