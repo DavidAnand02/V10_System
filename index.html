@@ -350,10 +350,26 @@ function makeEditable(element) {
 // Function to save changes made to the text
 function saveChanges(event) {
     const element = event.target;
+    const questIndex = element.dataset.questIndex;  // Get the quest index
+    const quest = quests[questIndex];  // Retrieve the specific quest
+
     element.contentEditable = "false";
 
-    // Perform any additional actions, like saving to a database or updating a list
-    console.log("Updated text:", element.innerText);
+    // Update the correct quest property based on the element id
+    if (element.id === 'quest-title') {
+        quest.title = element.innerText;
+    } else if (element.id === 'quest-details') {
+        quest.description = element.innerText;
+    } else if (element.id === 'quest-reward') {
+        quest.reward = element.innerText.replace('Reward: ', '');
+    } else if (element.id === 'quest-class-tag') {
+        quest.classTag = element.innerText.replace('Class Tag: ', '');
+    } else if (element.id === 'quest-punishment') {
+        quest.punishment = element.innerText.replace('Punishment: ', '');
+    }
+
+    saveQuestsToLocalStorage();
+    console.log("Updated quest:", quest);
 }
 </script>
 
