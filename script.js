@@ -549,9 +549,12 @@ function displayQuestLog() {
     });
 }
 
+// Updated showQuestInfo function
 function showQuestInfo(quest) {
     document.getElementById('quest-info-page').style.display = 'block';
     document.getElementById('quests-page').style.display = 'none';
+
+    const questIndex = quests.indexOf(quest);
 
     const questTitleElement = document.getElementById('quest-title');
     const questDetailsElement = document.getElementById('quest-details');
@@ -566,30 +569,12 @@ function showQuestInfo(quest) {
     questClassTagElement.innerText = `Class Tag: ${quest.classTag || 'None'}`;
     questPunishmentElement.innerText = `Punishment: ${quest.punishment || 'None'}`;
 
-    // Store the quest index
-    document.getElementById('quest-info').dataset.questIndex = quests.indexOf(quest);
-
-    // Add event listeners for real-time updates
-    questTitleElement.addEventListener('input', function () {
-        quest.title = this.innerText;
-        saveQuestsToLocalStorage();
-    });
-    questDetailsElement.addEventListener('input', function () {
-        quest.description = this.innerText;
-        saveQuestsToLocalStorage();
-    });
-    questRewardElement.addEventListener('input', function () {
-        quest.reward = this.innerText.replace('Reward: ', '');
-        saveQuestsToLocalStorage();
-    });
-    questClassTagElement.addEventListener('input', function () {
-        quest.classTag = this.innerText.replace('Class Tag: ', '');
-        saveQuestsToLocalStorage();
-    });
-    questPunishmentElement.addEventListener('input', function () {
-        quest.punishment = this.innerText.replace('Punishment: ', '');
-        saveQuestsToLocalStorage();
-    });
+    // Attach quest index to each editable element
+    questTitleElement.dataset.questIndex = questIndex;
+    questDetailsElement.dataset.questIndex = questIndex;
+    questRewardElement.dataset.questIndex = questIndex;
+    questClassTagElement.dataset.questIndex = questIndex;
+    questPunishmentElement.dataset.questIndex = questIndex;
 
     // Conditionally show the "Move to Active" button
     const moveToActiveButton = document.querySelector('button[onclick="moveQuestToActive()"]');
