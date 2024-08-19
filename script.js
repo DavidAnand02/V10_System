@@ -576,6 +576,9 @@ function showQuestInfo(quest) {
     questClassTagElement.dataset.questIndex = questIndex;
     questPunishmentElement.dataset.questIndex = questIndex;
 
+    // Set the dataset quest index on the quest-info element
+    document.getElementById('quest-info').dataset.questIndex = questIndex;
+
     // Conditionally show the "Move to Active" button
     const moveToActiveButton = document.querySelector('button[onclick="moveQuestToActive()"]');
     if (quest.status === 'completed' || quest.status === 'failed') {
@@ -584,6 +587,7 @@ function showQuestInfo(quest) {
         moveToActiveButton.style.display = 'none';
     }
 }
+
 
 
 
@@ -614,11 +618,14 @@ function markQuestAsCompleted() {
 
 function markQuestAsFailed() {
     const questIndex = document.getElementById('quest-info').dataset.questIndex;
-    quests[questIndex].status = 'failed';
+    const quest = quests[questIndex];
+    
+    quest.status = 'failed';
     saveQuestsToLocalStorage();  // Save to localStorage
     updateQuestLogs();
     closeQuestInfo();
 }
+
 
 function deleteQuest() {
     const questIndex = document.getElementById('quest-info').dataset.questIndex;
@@ -691,6 +698,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('make-quest-page').style.display = 'none';
     document.getElementById('quest-info-page').style.display = 'none';
     document.getElementById('landing-page').style.display = 'block';
+  
+
 
     // Event listeners for search inputs
     document.getElementById('search-active').addEventListener('input', displayQuestLog);
@@ -1055,3 +1064,4 @@ function goBacktoJobPage() {
         showJobPage('job-log');
     }
 }
+
