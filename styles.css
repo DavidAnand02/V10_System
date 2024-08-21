@@ -512,3 +512,59 @@ input[type="text"] {
 
 
 
+/* Ensure the scrollable container works well on mobile */
+#status-scroll-container {
+    max-height: 80vh; /* Ensures it doesn't take up full screen height */
+    overflow-y: auto; /* Allow vertical scrolling */
+}
+
+/* Mobile Responsive Styling */
+@media (max-width: 768px) {
+    /* Adjust player stats layout for smaller screens */
+    #stat-list {
+        display: flex;
+        flex-direction: column; /* Stack stats vertically */
+        gap: 20px; /* Space between stats */
+    }
+
+    #stat-list li {
+        display: flex;
+        flex-direction: column; /* Stack name, points, and buttons vertically */
+        align-items: center;
+        text-align: center;
+    }
+
+    .stat-buttons {
+        display: flex;
+        justify-content: center; /* Center the buttons */
+        gap: 10px; /* Space between the buttons */
+    }
+
+    /* Adjust button size for mobile */
+    .stat-button {
+        padding: 8px 15px;
+        font-size: 14px;
+    }
+
+    /* Effects section styling */
+    .effects-section ul {
+        text-align: left;
+        padding-left: 15px; /* Indent the list slightly */
+    }
+
+    /* Ensure the container doesn't overflow the mobile screen */
+    .container {
+        width: 95%;
+        max-height: 90vh; /* Set max height to avoid overflow */
+        overflow-y: auto; /* Enable scrolling */
+    }
+
+    /* Make back button more accessible */
+    .back-button {
+        padding: 10px 20px;
+        font-size: 14px;
+        width: 100%; /* Full-width button for mobile */
+    }
+}
+
+
